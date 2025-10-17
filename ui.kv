@@ -1,0 +1,229 @@
+
+#:kivy 2.3.0
+
+<GameRoot>:
+    padding: '8dp'
+    spacing: '6dp'
+    canvas.before:
+        Color:
+            rgba: 0.06, 0.07, 0.10, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    # TOP BAR: segmented progress centered + %
+    BoxLayout:
+        size_hint_y: None
+        height: '46dp'
+        padding: '8dp'
+        spacing: '8dp'
+        Widget:
+            size_hint_x: .2
+        RelativeLayout:
+            size_hint_x: .6
+            TopProgress:
+                id: top_progress
+                size_hint: 1, None
+                height: '12dp'
+                pos_hint: {'center_y': .5}
+            Label:
+                text: root.progress_pct_text
+                font_size: '14sp'
+                size_hint: None, None
+                size: self.texture_size
+                pos_hint: {'center_x': .5, 'center_y': .5}
+        Widget:
+            size_hint_x: .2
+
+    # INFO HUD
+    BoxLayout:
+        id: topbar
+        size_hint_y: None
+        height: '44dp'
+        spacing: '10dp'
+
+        Label:
+            id: lbl_level
+            text: "Рівень: " + str(root.state.level_idx)
+            font_size: '15sp'
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        Label:
+            id: lbl_coins
+            text: "Монети: " + str(root.state.coins)
+            font_size: '15sp'
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        Label:
+            id: lbl_hp
+            text: "HP: " + str(root.state.cart.hp) + "/" + str(root.state.cart.max_hp)
+            font_size: '15sp'
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        Label:
+            id: lbl_segment
+            text: "Сегмент: " + str(root.state.segment_idx)
+            font_size: '15sp'
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+    # CONTROL BAR
+    BoxLayout:
+        size_hint_y: None
+        height: '48dp'
+        spacing: '8dp'
+
+        Button:
+            text: "Старт"
+            on_release: root.start_run()
+        Button:
+            text: "Здатися"
+            on_release: root.surrender()
+        Button:
+            text: "Назад у меню"
+            on_release: root.back_to_menu()
+        Widget:
+        Button:
+            text: root.cart_cost_text
+            on_release: root.upgrade_cart()
+        Button:
+            text: root.weapon_cost_text
+            on_release: root.upgrade_weapon()
+        Button:
+            text: "Швидк. гри"
+            on_release: root.cycle_speed()
+
+    # PLAYFIELD
+    Playfield:
+        id: playfield
+
+    # STATUS
+    Label:
+        id: lbl_status
+        size_hint_y: None
+        height: '28dp'
+        text: root.status_text if root.status_text else ("Режим: " + root.phase)
+        font_size: '15sp'
+        halign: 'left'
+        valign: 'middle'
+        text_size: self.size
+
+# --- Screens ---
+<MenuScreen>:
+    name: 'menu'
+    canvas.before:
+        Color:
+            rgba: 0.05, 0.06, 0.09, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '24dp'
+        spacing: '18dp'
+
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            Label:
+                text: "TowerCartTD"
+                font_size: '22sp'
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+            Label:
+                text: root.exp_text
+                font_size: '18sp'
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
+
+        Widget:
+
+        BoxLayout:
+            size_hint_y: None
+            height: '300dp'
+            orientation: 'vertical'
+            spacing: '12dp'
+            Button:
+                text: "Грати (продовжити)"
+                font_size: '20sp'
+                on_release: app.start_game_continue()
+            Button:
+                text: "Почати з початку"
+                font_size: '20sp'
+                on_release: app.start_game_new()
+            Button:
+                text: "Магазин (кристали)"
+                font_size: '20sp'
+                on_release: app.sm.current = 'shop'
+            Button:
+                text: "Налаштування"
+                font_size: '20sp'
+                on_release: app.sm.current = 'settings'
+            Button:
+                text: "Вихід"
+                font_size: '20sp'
+                on_release: app.stop()
+
+        Widget:
+
+<GameScreen>:
+    name: 'game'
+    GameRoot:
+        external_state: root.incoming_state
+
+<ShopScreen>:
+    name: 'shop'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '16dp'
+        spacing: '12dp'
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            Label:
+                text: "Магазин (за кристали)"
+                font_size: '20sp'
+            Button:
+                text: "Назад"
+                size_hint_x: None
+                width: '120dp'
+                on_release: app.goto_menu()
+        Label:
+            text: "Тут з'являться перманентні покращення (приклад: +HP вагонетки, +броня, +стартові монети, +швидкострільність базової зброї)..."
+            text_size: self.width, None
+            halign: 'left'
+            valign: 'top'
+
+<SettingsScreen>:
+    name: 'settings'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '16dp'
+        spacing: '12dp'
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            Label:
+                text: "Налаштування"
+                font_size: '20sp'
+            Button:
+                text: "Назад"
+                size_hint_x: None
+                width: '120dp'
+                on_release: app.goto_menu()
+        Label:
+            text: "Тут додамо параметри звуку та мови."
+            halign: 'left'
+            valign: 'top'
+            text_size: self.width, None
+
+<RootManager>:
+    MenuScreen:
+    ShopScreen:
+    SettingsScreen:
