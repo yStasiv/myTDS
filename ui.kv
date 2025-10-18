@@ -11,7 +11,7 @@
             pos: self.pos
             size: self.size
 
-    # TOP BAR: segmented progress centered + %
+    # TOP BAR
     BoxLayout:
         size_hint_y: None
         height: '46dp'
@@ -27,7 +27,8 @@
                 height: '12dp'
                 pos_hint: {'center_y': .5}
             Label:
-                text: root.progress_pct_text
+                id: lbl_progress
+                text: "0.0%"
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
@@ -44,28 +45,28 @@
 
         Label:
             id: lbl_level
-            text: "Рівень: " + str(root.state.level_idx)
+            text: "Рівень: 1"
             font_size: '15sp'
             halign: 'left'
             valign: 'middle'
             text_size: self.size
         Label:
             id: lbl_coins
-            text: "Монети: " + str(root.state.coins)
+            text: "Монети: 0"
             font_size: '15sp'
             halign: 'left'
             valign: 'middle'
             text_size: self.size
         Label:
             id: lbl_hp
-            text: "HP: " + str(root.state.cart.hp) + "/" + str(root.state.cart.max_hp)
+            text: "HP: 0/0"
             font_size: '15sp'
             halign: 'left'
             valign: 'middle'
             text_size: self.size
         Label:
             id: lbl_segment
-            text: "Сегмент: " + str(root.state.segment_idx)
+            text: "Сегмент: 0"
             font_size: '15sp'
             halign: 'left'
             valign: 'middle'
@@ -96,6 +97,9 @@
         Button:
             text: "Швидк. гри"
             on_release: root.cycle_speed()
+        Button:
+            text: root.weapon_select_text
+            on_release: root.cycle_weapon()
 
     # PLAYFIELD
     Playfield:
@@ -195,7 +199,7 @@
                 width: '120dp'
                 on_release: app.goto_menu()
         Label:
-            text: "Тут з'являться перманентні покращення (приклад: +HP вагонетки, +броня, +стартові монети, +швидкострільність базової зброї)..."
+            text: "Тут з'являться перманентні покращення..."
             text_size: self.width, None
             halign: 'left'
             valign: 'top'
